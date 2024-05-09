@@ -1,10 +1,11 @@
 <template>
-  <div class="home" ref="home">
-    <div class="container">
-      <!-- <button @click="spinBox = !spinBox">ROT</button> -->
+  <div class="index" ref="home">
+    <NavBar />
+
+    <div class="container home">
       <div class="name">
         <h1>
-          <div class="char" v-for="char in 'I\'M'">
+          <div class="char bit" v-for="char in 'I\'M'">
             {{ char }}
           </div>
         </h1>
@@ -20,271 +21,161 @@
           </div>
         </h1>
       </div>
+      <div class="info">
+        <p class="fl">Generative AI</p>
+        <p class="fl">& Web Development</p>
+        <p class="fl">Enthusiast</p>
+
+        <div class="cir fl"></div>
+        <div class="bor fl">
+          <div class="lines"></div>
+          <div class="lines"></div>
+          <div class="lines"></div>
+          <div class="lines"></div>
+          <div class="lines"></div>
+          <div class="lines"></div>
+          <div class="lines"></div>
+        </div>
+        <div class="box fl"></div>
+        <div class="box2 fl"></div>
+      </div>
+      <div class="bg-skill">
+        <div class="row r1">
+          <div class="skill v">Vue</div>
+          <div class="skill">.</div>
+          <div class="skill r">React</div>
+          <div class="skill">.</div>
+          <div class="skill j">JavaScript</div>
+          <div class="skill">.</div>
+          <div class="skill s">SCSS</div>
+          <div class="skill">.</div>
+          <div class="skill j">Python</div>
+          <div class="skill">.</div>
+          <div class="skill g">Flask</div>
+          <div class="skill">.</div>
+        </div>
+        <div class="row r2">
+          <div class="skill g">GenAI</div>
+          <div class="skill">.</div>
+          <div class="skill g">LLMs</div>
+          <div class="skill">.</div>
+          <div class="skill g">ML</div>
+          <div class="skill">.</div>
+          <div class="skill g">DL</div>
+          <div class="skill">.</div>
+          <div class="skill g">WebScraping</div>
+          <div class="skill">.</div>
+        </div>
+        <div class="row r3">
+          <div class="skill v">SQL</div>
+          <div class="skill">.</div>
+          <div class="skill f">Firebase</div>
+          <div class="skill">.</div>
+          <div class="skill g">DigitalOcean</div>
+          <div class="skill">.</div>
+          <div class="skill f">Blender</div>
+          <div class="skill">.</div>
+          <div class="skill g">SocketIO</div>
+          <div class="skill">.</div>
+          <div class="skill v">OpenCV</div>
+          <div class="skill">.</div>
+        </div>
+      </div>
     </div>
-    <canvas
-      ref="canvas3d"
-      id="canvas3d"
-      @click="handleCanvasClick"
-      @mousemove="handleMouseOver"
-      @wheel="handleMouseWheel"
-    ></canvas>
+    <div class="container about">
+      <h1>About Me</h1>
+      <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Magnam commodi
+        beatae officiis nisi at sunt aliquid est, quam eum ratione molestias
+        eligendi quaerat cumque consequatur harum? Aspernatur explicabo
+        laboriosam, porro suscipit aperiam nam sed nisi est culpa eum dicta.
+        Cumque, veniam soluta aspernatur id ratione dolorem. Odio iusto earum
+        velit omnis vel, debitis minima eaque quod, ducimus laborum itaque magni
+        animi eum aperiam cupiditate reprehenderit. Ab fuga explicabo, aut dolor
+        optio officiis ut neque sed debitis exercitationem nisi praesentium
+        ratione, error sint atque. Nulla magnam at eum esse maxime commodi
+        reiciendis eveniet saepe. Omnis cupiditate recusandae dolor soluta
+        placeat. Dolorum.
+      </p>
+      <div class="grid" @click="flipstate"></div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { gsap } from "gsap";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import python from "@/assets/python.glb";
+import { horizontalLoop } from "@/assets/helpers";
+import { Flip } from "gsap/Flip";
+import { TextPlugin } from "gsap/all";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
-const loader = new GLTFLoader();
+gsap.registerPlugin(Flip, ScrollTrigger, ScrollToPlugin, TextPlugin);
 
-const home = ref(null);
-const canvas3d = ref(null);
-const currentHoveredObject = ref(null);
+const flipstate = () => {
+  let el = document.querySelector(".about");
 
-const spinBox = ref(false);
-
-let scene, camera, renderer, raycaster, mouse;
-
-const geometries = ref([]);
-const scrollAccumulator = ref(0);
-
-const rotateBox = () => {
-  geometries.value.forEach((geometry) => {
-    geometry.rotation.x += 0.01;
-    geometry.rotation.y += 0.01;
+  gsap.to(el, {
+    duration: 2,
+    text: "Hi, I'm Anupam Krishna",
   });
 };
 
 onMounted(() => {
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
-  );
-  renderer = new THREE.WebGLRenderer({ canvas: canvas3d.value, alpha: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-
-  raycaster = new THREE.Raycaster();
-  mouse = new THREE.Vector2();
-
-  const geometry = new THREE.BoxGeometry(8, 0.1, 5);
-  // const geo2 = new THREE.BoxGeometry(1, 1, 1);
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  const material2 = new THREE.MeshBasicMaterial({ color: 0x0088ff });
-
-  const cube = new THREE.Mesh(geometry, material);
-  const cube2 = new THREE.Mesh(geometry, material2);
-
-  // const text = new Text();
-  // scene.add(text);
-
-  // text.text = "Anupam Krishna";
-  // text.fontSize = 1;
-  // text.color = 0xffffff;
-  // text.font = "/GreatVibes-Regular.ttf";
-  // text.position.x = -5;
-  // text.position.z = -3;
-
-  // text.rotation.x = -1.57;
-
-  // const textGeo = new THREE.TextGeometry("Hello", {
-  //   font: new THREE.FontLoader().load(
-  //     "https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/fonts/helvetiker_regular.typeface.json"
-  //   ),
-  //   size: 1,
-  //   height: 0.1,
-  // });
-
-  cube.addEventListener("click", () => {
-    console.log("clicked");
-    // spinBox.value = !spinBox.value;
+  let loop1 = horizontalLoop(".r1 .skill", {
+    repeat: -1,
+    speed: 2,
   });
-
-  geometries.value.push(cube);
-  geometries.value.push(cube2);
-  const pythonLogo = loader.load(
-    python,
-    (gltf) => {
-      scene.add(gltf.scene);
-      geometries.value.push(gltf.scene);
-      console.log(gltf.scene);
-      console.log(geometries.value[2].scale);
-      geometries.value[2].scale.set(10, 10, 10);
-    },
-    (xhr) => {
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-    }
-  );
-
-  cube["hoverable"] = true;
-  cube2["hoverable"] = false;
-
-  // scene.add(cube);
-  scene.add(cube2);
-
-  cube.rotation.x = 0;
-
-  cube2.position.x = 10;
-  cube2.position.y = 15;
-  cube2.position.z = 10;
-
-  camera.position.z = 7;
-  camera.position.y = 0;
-  camera.lookAt(0, 0, 0);
-
+  let loop2 = horizontalLoop(".r2 .skill", {
+    repeat: -1,
+    reversed: true,
+  });
+  let loop3 = horizontalLoop(".r3 .skill", {
+    speed: 3,
+    repeat: -1,
+  });
   gsap.to(".char", {
     duration: 0.3,
     y: 0,
     stagger: 0.05,
-    delay: 0.5,
+    delay: 3,
+    ease: "back.out(1.7)",
+  });
+  gsap.to(".bg-skill", {
+    duration: 0.5,
+    opacity: 0.09,
+    delay: 3.5,
+  });
+  gsap.to(".info", {
+    duration: 0.5,
+    right: -20,
+    delay: 3.5,
+  });
+  gsap.to(".fl", {
+    duration: 0.5,
+    y: 0,
+    delay: 3.5,
   });
 
-  function animate() {
-    if (spinBox.value) {
-      rotateBox();
-    }
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-  }
-  animate();
-
-  setTimeout(() => {
-    gsap.to(camera.position, {
-      x: 0,
-      y: 5,
-      z: 0,
-      duration: 1,
-      onUpdate: () => {
-        camera.lookAt(0, 0, 0);
-      },
-    });
-  }, 1500);
+  gsap.to(".bg-skill", {
+    yPercent: 50,
+    scrollTrigger: {
+      scrub: true,
+    },
+  });
 });
-
-const handleCanvasClick = (event) => {
-  console.log("hadnling canvas  click");
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-  raycaster.setFromCamera(mouse, camera);
-
-  const intersects = raycaster.intersectObjects(scene.children);
-
-  if (intersects.length > 0) {
-    intersects[0].object.dispatchEvent({ type: "click" });
-  }
-};
-
-const handleMouseOver = (event) => {
-  // change color of the object
-
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-  let xtilt = (mouse.x - 0.5) * 0.02;
-  let ytilt = (mouse.y - 0.5) * 0.1;
-
-  // scene.children.forEach((child) => {
-  //   // mouse parrallax rotate objects based on position
-  //   // gsap.to(child.rotation, {
-  //   //   x: ytilt,
-  //   //   y: xtilt,
-  //   //   duration: 1,
-  //   // });
-  // });
-
-  raycaster.setFromCamera(mouse, camera);
-
-  const intersects = raycaster.intersectObjects(scene.children);
-
-  if (intersects.length > 0) {
-    // change color  + 1
-    if (
-      currentHoveredObject.value?.uuid != intersects[0].object.uuid &&
-      intersects[0].object.hoverable
-    ) {
-      if (currentHoveredObject.value) {
-        currentHoveredObject.value.material.color.set(0x0088ff);
-        gsap.to(currentHoveredObject.value.scale, {
-          x: 1,
-          y: 1,
-          z: 1,
-          duration: 1,
-        });
-      }
-
-      currentHoveredObject.value = intersects[0].object;
-      currentHoveredObject.value.material.color.set(0x00ff00);
-      gsap.to(currentHoveredObject.value.scale, {
-        x: 1.2,
-        y: 1.2,
-        z: 1.2,
-        duration: 1,
-      });
-    }
-  } else {
-    if (currentHoveredObject.value) {
-      currentHoveredObject.value.material.color.set(0x0088ff);
-      gsap.to(currentHoveredObject.value.scale, {
-        x: 1,
-        y: 1,
-        z: 1,
-        duration: 1,
-      });
-      currentHoveredObject.value = null;
-    }
-  }
-};
-
-const handleMouseWheel = (event) => {
-  scrollAccumulator.value += event.deltaY;
-
-  if (scrollAccumulator.value >= 300 && camera.position.y != 18) {
-    gsap.to(camera.position, {
-      x: 10,
-      y: 18,
-      z: 10,
-      duration: 2,
-      // onComplete: () => {
-      //   gsap.to(camera.position, {
-      //     y: 18,
-
-      //     duration: 2,
-      //   });
-      // },
-    });
-  } else if (scrollAccumulator.value < 300 && camera.position.y != 5) {
-    gsap.to(camera.position, {
-      x: 10,
-      y: 25,
-      z: 10,
-      duration: 2,
-      onComplete: () => {
-        gsap.to(camera.position, {
-          x: 0,
-          y: 5,
-          z: 0,
-          duration: 2,
-        });
-      },
-    });
-  }
-};
 </script>
 
 <style lang="scss" scoped>
-.home {
-  background: rgb(0, 71, 85);
-  background: radial-gradient(
-    circle,
-    rgba(0, 71, 85, 1) 0%,
-    rgba(2, 0, 36, 1) 100%
-  );
+.index {
+  background: #141414;
+  // background: url("@/assets/filler.png") repeat;
 
   height: 100vh;
   width: 100%;
+
+  overflow-y: scroll;
+  // scroll-snap-type: y mandatory;
 }
 
 #canvas3d {
@@ -298,33 +189,181 @@ const handleMouseWheel = (event) => {
 }
 
 .container {
-  pointer-events: none;
   display: flex;
   flex-direction: column;
 
   height: 100%;
   width: 100%;
 
-  position: absolute;
+  scroll-snap-align: start;
+}
+
+.home {
+  pointer-events: none;
+
+  height: 100vh;
+
+  position: relative;
   top: 0;
   left: 0;
 
-  z-index: 1;
-
+  overflow: hidden;
   .name {
     height: auto;
     margin-top: auto;
     margin-left: 15px;
+    z-index: 1;
+  }
+
+  .fl {
+    transform: translateY(100%);
+  }
+
+  .info {
+    font-size: 1rem;
+    color: white;
+    // text-align: center;
+    margin-top: 20px;
+    font-family: "BitxMap", sans-serif;
+    border: 1px solid white;
+
+    width: 200px;
+
+    padding: 20px;
+    position: absolute;
+
+    bottom: 110px;
+    right: -170px;
+
+    transform: rotateZ(-90deg);
+    z-index: 1;
+    // overflow-y: hidden;
+
+    .cir {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+      top: 0px;
+      right: -60px;
+    }
+    .box {
+      width: 10px;
+      height: calc(100% + 2px);
+
+      background: #fff;
+      position: absolute;
+      top: -1px;
+      left: -20px;
+    }
+    .box2 {
+      width: 3px;
+      height: calc(100% + 2px);
+
+      background: #fff;
+      position: absolute;
+      top: -1px;
+      left: -30px;
+    }
+
+    .bor {
+      width: 45px;
+      height: 45px;
+      // border-radius: 50%;
+      border: 2px solid #fff;
+      position: absolute;
+      bottom: 0px;
+      right: -60px;
+
+      display: flex;
+
+      flex-direction: column;
+      align-items: center;
+
+      overflow: hidden;
+
+      .lines {
+        width: 150%;
+        height: 2px;
+        background: #fff;
+
+        transform: rotateZ(45deg);
+        margin-top: 5px;
+      }
+    }
+  }
+
+  .bg-skill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    font-size: 256px;
+    color: #9c9c9c;
+
+    z-index: 0;
+    opacity: 0;
+    height: calc(100% - 100px);
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    font-family: "BitxMap", sans-serif;
+
+    .row {
+      display: flex;
+      height: 220px;
+      line-height: 200px;
+    }
+
+    .r1 {
+      transform: translateX(-160px);
+    }
+    .r3 {
+      transform: translateX(-260px);
+    }
+
+    .skill {
+      width: fit-content;
+      // line-height: 200px;
+      height: 200px;
+      // font-style: italic;
+    }
+
+    .v {
+      color: #41b883;
+    }
+
+    .r {
+      color: #61dafb;
+    }
+
+    .j {
+      color: #f7df1e;
+    }
+
+    .s {
+      color: #c65353;
+    }
+    .g {
+      color: #646464;
+    }
+    .f {
+      color: #ffc038;
+    }
   }
 
   h1 {
-    font-size: 10rem;
+    font-size: 12rem;
     color: white;
 
     text-align: center;
     display: flex;
 
-    height: 10rem;
+    height: 12rem;
 
     overflow: hidden;
 
@@ -332,8 +371,8 @@ const handleMouseWheel = (event) => {
     align-items: center;
 
     .char {
-      font-family: "Raleway", sans-serif;
-      font-weight: 400;
+      font-family: "Syncopate", sans-serif;
+      font-weight: 700;
       min-width: 15px;
       height: 100%;
 
@@ -341,13 +380,45 @@ const handleMouseWheel = (event) => {
       justify-content: center;
       align-items: center;
 
-      transform: translateY(10rem);
+      transform: translateY(12rem);
       //text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
     }
+
+    // .bit {
+    //   font-family: "BitxMap", sans-serif;
+    // }
   }
 
   * {
     pointer-events: all;
+  }
+}
+
+.about {
+  // background: #141414;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  padding-top: 80px;
+
+  font-family: "BitxMap", sans-serif;
+
+  h1 {
+    font-size: 64px;
+  }
+
+  .grid {
+    height: 300px;
+    display: flex;
+    .gridi {
+      padding: 10px;
+    }
+  }
+
+  .col {
+    flex-direction: column;
   }
 }
 </style>
